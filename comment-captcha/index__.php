@@ -12,7 +12,9 @@ function fn_comments_captcha_replace($content, $G) {
     }
     global $language;
     if (($s = strpos($content, '<p class="form-comment-button">')) === false) {
-        return $content;
+        if (($s = strpos($content, '<p class="form-comment-button ')) === false) {
+            return $content;
+        }
     }
     $state = Plugin::state(__DIR__);
     $type = $state['type'];
