@@ -1,6 +1,6 @@
 <?php
 
-Hook::set('shield.before', function() use($site) {
+Hook::set('route.enter', function() use($site) {
     if ($site->is === 'page') {
         Asset::set(__DIR__ . DS . 'lot' . DS . 'asset' . DS . 'css' . DS . 'comment.min.css');
     }
@@ -37,7 +37,7 @@ function fn_comments_captcha_replace($content, $G) {
 Hook::set('shield.get.output', 'fn_comments_captcha_replace');
 
 $state = Extend::state('comment');
-Route::hook('%*%/' . $state['path'], function() use($state, $url) {
+Route::lot('%*%/' . $state['path'], function() use($state, $url) {
     if (Request::is('post') && Captcha::check('comment', Request::post('captcha')) === false) {
         $s = Plugin::state(__DIR__, 'type');
         Message::error('captcha' . ($s ? '_' . $s : ""));
