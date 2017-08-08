@@ -4,6 +4,7 @@ description: Comment form protection using captcha.
 author: Taufik Nurrohman
 type: Markdown
 version: 1.0.1
+dependency: {"extension":["captcha","comment"]}
 ...
 
 Open `lot\extend\plugin\lot\worker\comment-captcha\lot\state\config.php` to configure:
@@ -25,12 +26,5 @@ Option | Description
 ------ | -----------
 `type` | The captcha type.
 `types` | Configuration for every captcha type.
-
-### Dependency
-
-#### Extension
-
- - Captcha
- - Comments
 
 <!-- block:donate -->
