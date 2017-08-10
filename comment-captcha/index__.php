@@ -20,7 +20,7 @@ function fn_comments_captcha_replace($content, $G) {
     $type = $state['type'];
     $html = "";
     if ($captcha = call_user_func_array('Captcha::' . $type, array_merge(['comment'], (array) $state['types'][$type]))) {
-        $html .= '<div class="form-comment-input form-comment-input--captcha p form-comment-input--captcha-' . $type . '">';
+        $html .= '<div class="form-comment-input form-comment-input:captcha p form-comment-input:captcha-' . $type . '">';
         $html .= '<label for="form-comment-input:captcha">';
         $html .= $language->captcha;
         $html .= '</label>';
