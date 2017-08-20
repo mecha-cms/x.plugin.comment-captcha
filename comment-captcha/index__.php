@@ -38,7 +38,7 @@ Hook::set('shield.get.output', 'fn_comments_captcha_replace');
 
 $state = Extend::state('comment');
 Route::lot('%*%/' . $state['path'], function() use($state, $url) {
-    if (Request::is('post') && Captcha::check('comment', Request::post('captcha')) === false) {
+    if (Request::is('post') && Captcha::check(Request::post('captcha'), 'comment') === false) {
         $s = Plugin::state(__DIR__, 'type');
         Message::error('captcha' . ($s ? '_' . $s : ""));
         Request::save('post');
