@@ -6,7 +6,7 @@ Hook::set('route.enter', function() use($site) {
     }
 });
 
-function fn_comments_captcha_replace($content, $G) {
+function fn_comment_captcha($content, $G) {
     if (!isset($G['source']) || $G['source'] !== 'comments') {
         return $content;
     }
@@ -20,7 +20,7 @@ function fn_comments_captcha_replace($content, $G) {
     $type = $state['type'];
     $html = "";
     if ($captcha = call_user_func_array('Captcha::' . $type, array_merge(['comment'], (array) $state['types'][$type]))) {
-        $html .= '<div class="form-comment-input form-comment-input:captcha p form-comment-input:captcha-' . $type . '">';
+        $html .= '<div class="form-comment-input form-comment-input:captcha form-comment-input:captcha-' . $type . ' p">';
         $html .= '<label for="form-comment-input:captcha">';
         $html .= $language->captcha;
         $html .= '</label>';
@@ -34,7 +34,7 @@ function fn_comments_captcha_replace($content, $G) {
     return $content;
 }
 
-Hook::set('shield.get.output', 'fn_comments_captcha_replace');
+Hook::set('shield.get.output', 'fn_comment_captcha');
 
 $state = Extend::state('comment');
 Route::lot('%*%/' . $state['path'], function() use($state, $url) {
