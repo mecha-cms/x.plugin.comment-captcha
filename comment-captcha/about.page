@@ -3,8 +3,11 @@ title: Comment Captcha
 description: Comment form protection using captcha.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.1.0
-dependency: {"extension":["captcha","comment"]}
+version: 1.2.0
+dependency:
+  extension:
+    - captcha
+    - comment
 ...
 
 Open `lot\extend\plugin\lot\worker\comment-captcha\lot\state\config.php` to configure:

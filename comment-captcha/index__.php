@@ -26,7 +26,7 @@ function fn_comment_captcha($content, $G) {
         $html .= '</label>';
         $html .= '<div>' . $captcha;
         Request::delete('post', 'captcha'); // always clear the cache value
-        $html .= $type !== 'toggle' ? ' ' . Form::text('captcha', null, null, ['classes' => ['input'], 'id' => 'form-comment-input:captcha', 'required' => true, 'autocomplete' => 'off']) : "";
+        $html .= $type !== 'toggle' ? ' ' . Form::text('captcha', null, null, ['class[]' => ['input'], 'id' => 'form-comment-input:captcha', 'required' => true, 'autocomplete' => 'off']) : "";
         $html .= '</div>';
         $html .= '</div>';
         return substr($content, 0, $s) . $html . substr($content, $s);
