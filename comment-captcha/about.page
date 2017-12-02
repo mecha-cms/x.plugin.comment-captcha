@@ -4,6 +4,7 @@ description: Comment form protection using captcha.
 author: Taufik Nurrohman
 type: Markdown
 version: 1.2.0
+
 dependency:
   extension:
     - captcha
