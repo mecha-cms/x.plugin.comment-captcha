@@ -26,7 +26,12 @@ function fn_comment_captcha($content, $G) {
         $html .= '</label>';
         $html .= '<div>' . $captcha;
         Request::delete('post', 'captcha'); // always clear the cache value
-        $html .= $type !== 'toggle' ? ' ' . Form::text('captcha', null, null, ['class[]' => ['input'], 'id' => 'form-comment-input:captcha', 'required' => true, 'autocomplete' => 'off']) : "";
+        $html .= $type !== 'toggle' ? ' ' . Form::text('captcha', null, null, [
+            'class[]' => ['input'],
+            'id' => 'form-comment-input:captcha',
+            'required' => true,
+            'autocomplete' => 'off'
+        ]) : "";
         $html .= '</div>';
         $html .= '</div>';
         return substr($content, 0, $s) . $html . substr($content, $s);
@@ -42,6 +47,6 @@ Route::lot('%*%/' . $state['path'], function() use($state, $url) {
         $s = Plugin::state(__DIR__, 'type');
         Message::error('captcha' . ($s ? '_' . $s : ""));
         Request::save('post');
-        Guardian::kick(Path::D($url->current) . '#' . $state['anchor'][1]);
+        Guardian::kick(Path::D($url->current) . HTTP::query() . '#' . $state['anchor'][1]);
     }
 });
