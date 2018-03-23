@@ -1,7 +1,7 @@
 <?php
 
 Hook::set('route.enter', function() use($site) {
-    if ($site->is === 'page') {
+    if ($site->is('page')) {
         Asset::set(__DIR__ . DS . 'lot' . DS . 'asset' . DS . 'css' . DS . 'comment.min.css');
     }
 });
@@ -16,7 +16,7 @@ function fn_comment_captcha($content, $G) {
             return $content;
         }
     }
-    $state = Plugin::state(__DIR__);
+    $state = Plugin::state('comment-captcha');
     $type = $state['type'];
     $html = "";
     if ($captcha = call_user_func_array('Captcha::' . $type, array_merge(['comment'], (array) $state['types'][$type]))) {
@@ -44,9 +44,9 @@ Hook::set('shield.get.output', 'fn_comment_captcha');
 $state = Extend::state('comment');
 Route::lot('%*%/' . $state['path'], function() use($state, $url) {
     if (Request::is('post') && Captcha::check(Request::post('captcha'), 'comment') === false) {
-        $s = Plugin::state(__DIR__, 'type');
+        $s = Plugin::state('comment-captcha', 'type');
         Message::error('captcha' . ($s ? '_' . $s : ""));
         Request::save('post');
-        Guardian::kick(Path::D($url->current) . HTTP::query() . '#' . $state['anchor'][1]);
+        Guardian::kick(Path::D($url->current) . $url->query . '#' . $state['anchor'][1]);
     }
 });
