@@ -1,16 +1,15 @@
 <?php
 
-Hook::set('route.enter', function() use($site) {
+Hook::set('shield.enter', function() use($site) {
     if ($site->is('page')) {
         Asset::set(__DIR__ . DS . 'lot' . DS . 'asset' . DS . 'css' . DS . 'comment.min.css');
     }
 });
 
-function fn_comment_captcha($content, $G) {
-    if (!isset($G['source']) || $G['source'] !== 'comments') {
-        return $content;
-    }
-    global $language;
+// Set unique ID as the form name
+Config::set('_comment_captcha_id', 'captcha:' . date('Y-m-d')); // valid for a day
+
+function fn_comment_captcha($content) {
     if (($s = strpos($content, '<p class="form-comment-button">')) === false) {
         if (($s = strpos($content, '<p class="form-comment-button ')) === false) {
             return $content;
@@ -19,14 +18,16 @@ function fn_comment_captcha($content, $G) {
     $state = Plugin::state('comment-captcha');
     $type = $state['type'];
     $html = "";
-    if ($captcha = call_user_func_array('Captcha::' . $type, array_merge(['comment'], (array) $state['types'][$type]))) {
+    $id = Config::get('_comment_captcha_id');
+    global $language;
+    if ($captcha = call_user_func('Captcha::' . $type, ...array_merge(['comment'], (array) $state['types'][$type]))) {
         $html .= '<div class="form-comment-input form-comment-input:captcha form-comment-input:captcha-' . $type . ' p">';
         $html .= '<label for="form-comment-input:captcha">';
         $html .= $language->captcha;
         $html .= '</label>';
         $html .= '<div>' . $captcha;
-        Request::delete('post', 'captcha'); // always clear the cache value
-        $html .= $type !== 'toggle' ? ' ' . Form::text('captcha', null, null, [
+        HTTP::delete('post', $id); // always clear the cache value
+        $html .= $type !== 'toggle' ? ' ' . Form::text($id, null, null, [
             'class[]' => ['input'],
             'id' => 'form-comment-input:captcha',
             'required' => true,
@@ -39,14 +40,24 @@ function fn_comment_captcha($content, $G) {
     return $content;
 }
 
-Hook::set('shield.get.output', 'fn_comment_captcha');
+// Apply captcha only for inactive user(s)
+if (!Extend::exist('user') || !Is::user()) {
 
-$state = Extend::state('comment');
-Route::lot('%*%/' . $state['path'], function() use($state, $url) {
-    if (Request::is('post') && Captcha::check(Request::post('captcha'), 'comment') === false) {
-        $s = Plugin::state('comment-captcha', 'type');
-        Message::error('captcha' . ($s ? '_' . $s : ""));
-        Request::save('post');
-        Guardian::kick(Path::D($url->current) . $url->query . '#' . $state['anchor'][1]);
-    }
-});
+    // Must be set through `shield.yield` or `view.yield` hook instead of `shield.get`
+    // and `view.get` because cookie data must be sent before HTTP header(s) set,
+    // and `shield.yield` or `view.yield` can be used to make sure that the output
+    // buffer started before any other output buffer(s)
+    Hook::set('shield.yield', 'fn_comment_captcha');
+
+    $state = Extend::state('comment');
+    Route::lot('%*%/' . $state['path'], function() use($state, $url) {
+        $id = Config::get('_comment_captcha_id');
+        if (HTTP::is('post') && Captcha::check(HTTP::post($id), 'comment') === false) {
+            $s = Plugin::state('comment-captcha', 'type');
+            Message::error('captcha' . ($s ? '_' . $s : ""));
+            HTTP::save('post');
+            Guardian::kick(Path::D($url->clean) . $url->query . '#' . $state['anchor'][1]);
+        }
+    });
+
+}

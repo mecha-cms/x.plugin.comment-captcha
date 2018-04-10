@@ -3,7 +3,7 @@ title: Comment Captcha
 description: Comment form protection using captcha.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.3.0
+version: 1.4.0
 
 dependency:
   extension:
