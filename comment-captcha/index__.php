@@ -7,7 +7,7 @@ Hook::set('shield.enter', function() use($site) {
 });
 
 // Set unique ID as the form name
-Config::set('_comment_captcha_id', 'captcha:' . date('Y-m-d')); // valid for a day
+Config::set('_comment_captcha_id', sprintf('captcha:%x', crc32(date('Ymd')))); // valid for a day
 
 function fn_comment_captcha($content) {
     if (($s = strpos($content, '<p class="form-comment-button">')) === false) {
