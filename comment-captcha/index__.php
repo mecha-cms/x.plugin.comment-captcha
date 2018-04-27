@@ -25,14 +25,17 @@ function fn_comment_captcha($content) {
         $html .= '<label for="form-comment-input:captcha">';
         $html .= $language->captcha;
         $html .= '</label>';
-        $html .= '<div>' . $captcha;
+        $html .= '<div>';
         HTTP::delete('post', $id); // always clear the cache value
-        $html .= $type !== 'toggle' ? ' ' . Form::text($id, null, null, [
+        $html .= $type !== 'token' ? $captcha . ' ' . Form::text($id, null, null, [
             'class[]' => ['input'],
             'id' => 'form-comment-input:captcha',
             'required' => true,
             'autocomplete' => 'off'
-        ]) : "";
+        ]) : Form::check($id, $captcha, false, $language->captcha_token_check, [
+            'class[]' => ['input', 'captcha'],
+            'id' => 'form-comment-input:captcha'
+        ]);
         $html .= '</div>';
         $html .= '</div>';
         return substr($content, 0, $s) . $html . substr($content, $s);
@@ -43,7 +46,7 @@ function fn_comment_captcha($content) {
 // Apply captcha only for inactive user(s)
 if (!Extend::exist('user') || !Is::user()) {
 
-    // Must be set through `shield.yield` or `view.yield` hook instead of `shield.get`
+    // Set through `shield.yield` or `view.yield` hook instead of `shield.get`
     // and `view.get` because cookie data must be sent before HTTP header(s) set,
     // and `shield.yield` or `view.yield` can be used to make sure that the output
     // buffer started before any other output buffer(s)
@@ -54,6 +57,9 @@ if (!Extend::exist('user') || !Is::user()) {
         $id = Config::get('_comment_captcha_id');
         if (HTTP::is('post') && Captcha::check(HTTP::post($id), 'comment') === false) {
             $s = Plugin::state('comment-captcha', 'type');
+            if ($s === 'token') {
+                $s .= '_check';
+            }
             Message::error('captcha' . ($s ? '_' . $s : ""));
             HTTP::save('post');
             Guardian::kick(Path::D($url->clean) . $url->query . '#' . $state['anchor'][1]);

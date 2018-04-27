@@ -1,0 +1,7 @@
+---
+type: YAML
+...
+
+captcha_token_check: Saya bukan robot.
+
+message_error_captcha_token_check: Anda adalah robot.

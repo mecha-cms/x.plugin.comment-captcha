@@ -3,10 +3,10 @@
   margin-left:.5em;
 }
 .form-comment-input\:captcha-math .captcha:after {content: ' ='}
-.form-comment-input\:captcha-toggle .captcha {
+.form-comment-input\:captcha-token .input.captcha {
   width:auto;
   margin-left:0;
   margin-right:.5em;
 }
 .form-comment-input\:captcha-math > label,
-.form-comment-input\:captcha-toggle > label {visibility:hidden}
+.form-comment-input\:captcha-token > label {visibility:hidden}
