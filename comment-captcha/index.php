@@ -46,9 +46,9 @@ function fn_comment_captcha($content) {
 // Apply captcha only for inactive user(s)
 if (!Extend::exist('user') || !Is::user()) {
 
-    // Set through `shield.yield` or `view.yield` hook instead of `shield.get`
-    // and `view.get` because cookie data must be sent before HTTP header(s) set,
-    // and `shield.yield` or `view.yield` can be used to make sure that the output
+    // Set through `shield.yield` hook instead of `shield.get`
+    // because cookie data must be sent before HTTP header(s) set,
+    // and `shield.yield` can be used to make sure that the output
     // buffer started before any other output buffer(s)
     Hook::set('shield.yield', 'fn_comment_captcha');
 
